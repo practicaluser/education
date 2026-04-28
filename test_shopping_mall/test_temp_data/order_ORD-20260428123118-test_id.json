@@ -1,0 +1,13 @@
+{
+    "order_id": "ORD-20260428123118-test_id",
+    "buyer": "테스트유저",
+    "total_price": 4000000,
+    "timestamp": "2026-04-28T12:31:18.657621",
+    "items": [
+        {
+            "product_name": "맥북",
+            "quantity": 2,
+            "price": 2000000
+        }
+    ]
+}

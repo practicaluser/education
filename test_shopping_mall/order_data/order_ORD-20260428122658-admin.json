@@ -1,0 +1,13 @@
+{
+    "order_id": "ORD-20260428122658-admin",
+    "buyer": "관리자",
+    "total_price": 22000,
+    "timestamp": "2026-04-28T12:26:58.494290",
+    "items": [
+        {
+            "product_name": "테스트 상품 1",
+            "quantity": 2,
+            "price": 11000
+        }
+    ]
+}
