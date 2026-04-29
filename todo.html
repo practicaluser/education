@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>투두리스트</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 50px;
+    }
+    .todo-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      width: 300px;
+    }
+    h2 {
+      text-align: center;
+    }
+    input[type="text"] {
+      width: 80%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 8px;
+      margin-left: 5px;
+      border: none;
+      background: #28a745;
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+    li {
+      background: #eee;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    li.completed {
+      text-decoration: line-through;
+      color: gray;
+    }
+    .delete-btn {
+      background: #dc3545;
+      padding: 5px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="todo-container">
+    <h2>투두리스트</h2>
+    <input type="text" id="todo-input" placeholder="할 일을 입력하세요">
+    <button id="add-btn">추가</button>
+    <ul id="todo-list"></ul>
+  </div>
+
+  <script>
+    const input = document.getElementById("todo-input");
+    const addBtn = document.getElementById("add-btn");
+    const todoList = document.getElementById("todo-list");
+
+    // 할 일 추가
+    addBtn.addEventListener("click", () => {
+      const task = input.value.trim();
+      if (task !== "") {
+        const li = document.createElement("li");
+        li.textContent = task;
+
+        // 완료 토글
+        li.addEventListener("click", () => {
+          li.classList.toggle("completed");
+        });
+
+        // 삭제 버튼
+        const delBtn = document.createElement("span");
+        delBtn.textContent = "삭제";
+        delBtn.classList.add("delete-btn");
+        delBtn.addEventListener("click", (e) => {
+          e.stopPropagation(); // 완료 토글 방지
+          li.remove();
+        });
+
+        li.appendChild(delBtn);
+        todoList.appendChild(li);
+        input.value = "";
+      }
+    });
+
+    // 엔터키로 추가
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        addBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>이미지 슬라이더 애니메이션</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #111;
+      margin: 0;
+      flex-direction: column;
+    }
+
+    .slider {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: transform 0.8s ease-in-out, opacity 0.8s ease-in-out;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .slide.prev {
+      transform: translateX(-100%);
+    }
+
+    .controls {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+    }
+
+    .controls button {
+      background: rgba(255,255,255,0.3);
+      border: none;
+      color: white;
+      font-size: 2rem;
+      cursor: pointer;
+      padding: 10px 20px;
+      border-radius: 50%;
+      transition: background 0.3s;
+    }
+
+    .controls button:hover {
+      background: rgba(255,255,255,0.6);
+    }
+
+    .caption {
+      margin-top: 15px;
+      color: #fff;
+      font-size: 1.2rem;
+      text-align: center;
+      font-family: 'Arial', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div class="slider">
+    <div class="slide active" style="background-image: url('animation0.png');"></div>
+    <div class="slide" style="background-image: url('animation1.png');"></div>
+    <div class="slide" style="background-image: url('animation2.png');"></div>
+    <div class="controls">
+      <button id="prev">◀</button>
+      <button id="next">▶</button>
+    </div>
+  </div>
+
+  <div class="caption" id="caption">animation0.png</div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const caption = document.getElementById('caption');
+    const names = ['animation0.png', 'animation1.png', 'animation2.png'];
+    let current = 0;
+
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.classList.remove('active', 'prev');
+        if (i === index) {
+          slide.classList.add('active');
+        } else if (i === (index - 1 + slides.length) % slides.length) {
+          slide.classList.add('prev');
+        }
+      });
+      caption.textContent = names[index];
+    }
+
+    document.getElementById('next').addEventListener('click', () => {
+      current = (current + 1) % slides.length;
+      showSlide(current);
+    });
+
+    document.getElementById('prev').addEventListener('click', () => {
+      current = (current - 1 + slides.length) % slides.length;
+      showSlide(current);
+    });
+  </script>
+</body>
+</html>

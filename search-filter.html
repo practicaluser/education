@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Real-time Search Filter with Debounce</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+    input {
+      width: 300px;
+      padding: 8px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      padding: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <h2>Real-time Search Filter (Debounce)</h2>
+  <input type="text" id="searchInput" placeholder="Type to search...">
+
+  <ul id="wordList">
+    <li>Apple</li>
+    <li>Banana</li>
+    <li>Orange</li>
+    <li>Mango</li>
+    <li>Grape</li>
+    <li>Lemon</li>
+    <li>Cherry</li>
+    <li>Peach</li>
+    <li>Pear</li>
+    <li>Watermelon</li>
+    <li>Strawberry</li>
+    <li>Blueberry</li>
+    <li>Pineapple</li>
+    <li>Kiwi</li>
+    <li>Coconut</li>
+    <li>Papaya</li>
+    <li>Plum</li>
+    <li>Fig</li>
+    <li>Date</li>
+    <li>Melon</li>
+  </ul>
+
+  <script>
+    // 디바운스 함수 정의
+    function debounce(callback, delay) {
+      let timer;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          callback(...args);
+        }, delay);
+      };
+    }
+
+    const searchInput = document.getElementById('searchInput');
+    const wordList = document.getElementById('wordList');
+    const words = wordList.getElementsByTagName('li');
+
+    // 디바운스를 적용한 검색 이벤트
+    const handleSearch = debounce(() => {
+      const filter = searchInput.value.toLowerCase();
+      for (let i = 0; i < words.length; i++) {
+        const text = words[i].textContent.toLowerCase();
+        words[i].style.display = text.includes(filter) ? "" : "none";
+      }
+    }, 300); // 300ms 지연
+
+    searchInput.addEventListener('keyup', handleSearch);
+  </script>
+</body>
+</html>
