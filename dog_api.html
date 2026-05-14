@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Dog Breed Image</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 30px;
+            color: #333;
+        }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        .controls {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        label {
+            font-size: 16px;
+        }
+        select {
+            padding: 5px;
+            font-size: 16px;
+            min-width: 120px;
+        }
+        button {
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        button:hover {
+            background-color: #e0e0e0;
+        }
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        #image-container {
+            margin-top: 20px;
+        }
+        #dog-img {
+            max-width: 500px;
+            max-height: 500px;
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Random Dog Breed Image</h1>
+
+    <div class="controls">
+        <label for="main-breed-select">Choose a main breed:</label>
+        <select id="main-breed-select">
+            <option value="">Loading...</option>
+        </select>
+
+        <label for="sub-breed-select">Choose a sub-breed:</label>
+        <select id="sub-breed-select" disabled>
+            <option value="">Select a main breed</option>
+        </select>
+
+        <button id="fetch-btn">Fetch Image</button>
+    </div>
+
+    <div id="image-container">
+        <img id="dog-img" alt="Random Dog Image" />
+    </div>
+
+    <script>
+        // DOM 요소 가져오기
+        const mainBreedSelect = document.getElementById('main-breed-select');
+        const subBreedSelect = document.getElementById('sub-breed-select');
+        const fetchBtn = document.getElementById('fetch-btn');
+        const dogImg = document.getElementById('dog-img');
+
+        // 전체 품종 데이터를 저장할 전역 변수
+        let allBreedsData = {};
+
+        /**
+         * 4.1 breed 목록 불러오기 (서브 품종 포함)
+         */
+        async function loadBreeds() {
+            try {
+                const response = await fetch('https://dog.ceo/api/breeds/list/all');
+                const data = await response.json();
+                
+                // 데이터 저장 (예: { "australian": ["kelpie", "shepherd"], "beagle": [], ... })
+                allBreedsData = data.message;
+
+                // 메인 품종 셀렉트 박스 초기화
+                mainBreedSelect.innerHTML = '<option value="">-- Select --</option>';
+
+                // 메인 품종 목록 추가
+                Object.keys(allBreedsData).forEach(breed => {
+                    const option = document.createElement('option');
+                    option.value = breed;
+                    option.textContent = breed;
+                    mainBreedSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('품종 목록을 불러오는 중 오류 발생:', error);
+                mainBreedSelect.innerHTML = '<option value="">Error loading breeds</option>';
+            }
+        }
+
+        /**
+         * 4.3 메인 품종 선택 시 서브 품종 목록 업데이트
+         */
+        function updateSubBreeds() {
+            const selectedMainBreed = mainBreedSelect.value;
+            
+            // 서브 품종 셀렉트 박스 초기화
+            subBreedSelect.innerHTML = '';
+
+            // 메인 품종을 선택하지 않은 경우
+            if (!selectedMainBreed) {
+                subBreedSelect.innerHTML = '<option value="">Select a main breed</option>';
+                subBreedSelect.disabled = true;
+                return;
+            }
+
+            // 선택한 메인 품종의 서브 품종 배열 가져오기
+            const subBreeds = allBreedsData[selectedMainBreed];
+
+            // 서브 품종이 존재하는 경우
+            if (subBreeds && subBreeds.length > 0) {
+                subBreedSelect.disabled = false; // 비활성화 해제
+                
+                // (선택 사항) 서브 품종에 상관없이 메인 품종 사진을 보고 싶을 때를 위한 옵션
+                subBreedSelect.innerHTML = '<option value="">-- Any Sub-breed --</option>';
+
+                subBreeds.forEach(subBreed => {
+                    const option = document.createElement('option');
+                    option.value = subBreed;
+                    option.textContent = subBreed;
+                    subBreedSelect.appendChild(option);
+                });
+            } else {
+                // 서브 품종이 없는 경우 (예: beagle)
+                subBreedSelect.innerHTML = '<option value="">No sub-breeds</option>';
+                subBreedSelect.disabled = true;
+            }
+        }
+
+        /**
+         * 4.2 & 4.4 조건에 맞춰 사진 불러오기
+         */
+        async function fetchDogImage() {
+            const mainBreed = mainBreedSelect.value;
+            const subBreed = subBreedSelect.value;
+            
+            // 메인 품종을 선택하지 않았다면 경고 후 종료
+            if (!mainBreed) {
+                alert('메인 품종을 먼저 선택해주세요.');
+                return;
+            }
+
+            fetchBtn.textContent = 'Loading...';
+            fetchBtn.disabled = true;
+
+            // API URL 동적 생성 (서브 품종 선택 여부에 따라 URL이 달라짐)
+            let apiUrl = `https://dog.ceo/api/breed/${mainBreed}/images/random`;
+            
+            // 서브 품종이 비활성화 상태가 아니고, 실제로 특정 서브 품종을 선택했을 때
+            if (!subBreedSelect.disabled && subBreed !== "") {
+                apiUrl = `https://dog.ceo/api/breed/${mainBreed}/${subBreed}/images/random`;
+            }
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    dogImg.src = data.message;
+                    dogImg.style.display = 'block';
+                } else {
+                    alert('이미지를 찾을 수 없습니다.');
+                }
+            } catch (error) {
+                console.error('이미지를 불러오는 중 오류 발생:', error);
+                alert('이미지를 불러오는데 실패했습니다.');
+            } finally {
+                fetchBtn.textContent = 'Fetch Image';
+                fetchBtn.disabled = false;
+            }
+        }
+
+        // 이벤트 리스너 등록
+        // 1. 메인 품종이 변경될 때마다 서브 품종 목록 업데이트
+        mainBreedSelect.addEventListener('change', updateSubBreeds);
+        
+        // 2. Fetch 버튼 클릭 시 이미지 불러오기
+        fetchBtn.addEventListener('click', fetchDogImage);
+
+        // 페이지 로드 시 최초 1회 품종 목록 가져오기
+        loadBreeds();
+    </script>
+</body>
+</html>
