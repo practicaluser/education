@@ -1,0 +1,21 @@
+{% extends 'base.html' %} {% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-4">
+    <h3 class="mb-3">로그인</h3>
+    <form method="POST" action="{{ url_for('login') }}">
+      <div class="mb-3">
+        <label for="username" class="form-label">이름(아이디)</label>
+        <input
+          type="text"
+          class="form-control"
+          id="username"
+          name="username"
+          required
+          placeholder="이름을 입력하세요"
+        />
+      </div>
+      <button type="submit" class="btn btn-primary w-100">로그인</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
